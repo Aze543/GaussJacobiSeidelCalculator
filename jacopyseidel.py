@@ -181,6 +181,9 @@ class JacopySeidel:
         return f"\nx = {x}, y = {y}, z = {z}"
     
     def __determinant(self, matrix):
+        """
+        finds the determinant of a matrix.
+        """
         result = (
             (matrix[0][0]*((matrix[1][1]*matrix[2][2])-(matrix[2][1]*matrix[1][2]))) 
             - (matrix[0][1]*((matrix[1][0]*matrix[2][2])-(matrix[2][0]*matrix[1][2]))) 
@@ -220,12 +223,18 @@ class JacopySeidel:
             
 
     def __write_to_table(self, data, index, values):
+        """
+        writes the values for the iteration table.
+        """
         data[0].append(index)
         data[1].append(values[0])
         data[2].append(values[1])
         data[3].append(values[2])
     
     def __show_iteration_table(self, data):
+        """
+        shows the iteration table.
+        """
         arr = {"iteration": data[0], "x": data[1], "y": data[2], "z": data[3]}
         df = pd.DataFrame(arr)
         table = tbl.tabulate(df, headers='keys', tablefmt="grid", showindex=False)
