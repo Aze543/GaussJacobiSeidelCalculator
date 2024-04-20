@@ -118,8 +118,9 @@ class Calculator:
                 "\nthe matrix is not diagonally dominant, the program will use Cramers-Rule."
             )
             cr = self.__cramers_rule()
-            print(f"\nCramers-Rule\nResult: x = {cr[0]}, y = {cr[1]}, z = {cr[2]}\n")
-
+            if type(cr) != bool:
+                print(f"\nCramers-Rule\nResult: x = {cr[0]}, y = {cr[1]}, z = {cr[2]}\n")
+    
     def __gauss_seidel(self) -> list:
         """
         performs Gauss-Seidel method
@@ -241,11 +242,13 @@ class Calculator:
                 [self.__matrix[2][0], self.__matrix[2][1], self.__matrix[2][3]],
             ]
         )
-
-        x = round(numerator_x / denominator, 3)
-        y = round(numerator_y / denominator, 3)
-        z = round(numerator_z / denominator, 3)
-
+        try: 
+            x = round(numerator_x / denominator, 3)
+            y = round(numerator_y / denominator, 3)
+            z = round(numerator_z / denominator, 3)
+        except Exception as e:
+            print(f"\n[ERROR: {e}] the operation cannot continue.")
+            return False
         return [x, y, z]
 
     def __determinant(self, matrix) -> int:
