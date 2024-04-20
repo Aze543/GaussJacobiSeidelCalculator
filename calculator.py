@@ -162,8 +162,6 @@ class Calculator:
             new_x = round((arr_x[3] - (arr_x[1] * y) - (arr_x[2] * z)) / arr_x[0], 3)
             new_y = round((arr_y[3] - (arr_y[0] * x) - (arr_y[2] * z)) / arr_y[1], 3)
             new_z = round((arr_z[3] - (arr_z[0] * x) - (arr_z[1] * y)) / arr_z[2], 3)
-            if self.__jacopy_counter > 100:
-                return f"\nthis system of linear equation doesn't or takes time to converge, the program will use Cramer's Rule instead.\n{self.__cramers_rule()}"
             if (new_x, new_y, new_z) == (x, y, z):
                 break
             else:
