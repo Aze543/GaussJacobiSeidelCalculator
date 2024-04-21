@@ -76,6 +76,7 @@ class Calculator:
                 self.__matrix= matrix
                 return True
             elif p_counter == 6:
+                self.__matrix= [matrix[2], matrix[1], matrix[0]]
                 return False
             else:
                 counter = 0
@@ -117,6 +118,7 @@ class Calculator:
             print(
                 "\nthe matrix is not diagonally dominant, the program will use Cramers-Rule."
             )
+            self.__view()
             cr = self.__cramers_rule()
             if type(cr) != bool:
                 print(f"\nCramers-Rule\nResult: x = {cr[0]}, y = {cr[1]}, z = {cr[2]}\n")
