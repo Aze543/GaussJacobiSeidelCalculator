@@ -3,7 +3,7 @@ from calculator import Calculator
 def main():
     unwanted_item = [" ", "+"]
     while True:
-        print("\nGauss-Jacopy and Gauss-Seidel calculator!\n")
+        print("\nGauss-Jacopy, Gauss-Seidel, and Relaxation calculator!\n")
         equation1 = [
             item for item in [*input("equation1: ")] if item not in unwanted_item
         ]
