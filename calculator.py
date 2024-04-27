@@ -30,7 +30,7 @@ class Calculator:
                         right_side += str(array[n])
                     break
                 try:
-                    int(n)
+                    float(n)
                 except Exception:
                     if n_before_variable == "":
                         arr.append(int(f"{sign_collector}{1}"))
@@ -38,13 +38,13 @@ class Calculator:
                     else:
                         n_before_variable = ""
                 else:
-                    arr.append(int(f"{sign_collector}{n}"))
+                    arr.append(float(f"{sign_collector}{n}"))
                     sign_collector = ""
                     n_before_variable = f"{n}"
-            arr.append(int(right_side))
+            arr.append(float(right_side))
             self.__matrix.append(arr)
 
-    def __view(self) -> None:
+    def view_matrix(self) -> None:
         """
         views the equation in matrix form
         """
@@ -55,7 +55,10 @@ class Calculator:
             print(f"{arr[:-1]} [{letters[n]}] = {[arr[3]]}")
             n += 1
             
-    def __test_diagonal(self) -> bool:
+    def test_diagonal_dominance(self) -> bool:
+        """
+        Tests whether the matrix is diagonally dominant in any sequence
+        """
         sequence = [[0,1,2], [0,2,1], [1,0,2], [1,2,0], [2,0,1], [2,1,0]]
         diagonal_item = 0
         counter = 0
@@ -82,48 +85,8 @@ class Calculator:
                 counter = 0
                 p_counter += 1
                 diagonal_item = 0
-
-    def start_calculations(self) -> None:
-        """
-        starts the calcultaions.
-        """
-        print("\ntesting if the matrix is diagonally dominant.")
-        result = self.__test_diagonal()
-        if result:
-            self.__view()
-            jacopy = self.__gauss_jacopy()
-            seidel = self.__gauss_seidel()
-            relaxation = self.__relaxation()
-            print("\nthe matrix is diagonally dominant, what method would you like to use?")
-            while True:
-                print("\n(GJ) for Gauss-Jacopy Method\n(GS) for Gauss-Seidel Method\n(RS) for Relaxation Method\n(C) for comparison\n(E) to go back")
-                response = input("\ninput: ").upper()
-                if response == "GJ":
-                    print(f"\nGauss-Jacopy Method\nResult: x = {jacopy[0]}, y = {jacopy[1]}, z = {jacopy[2]}\nnumber of iterations: {self.__jacopy_counter}\n{self.__jacopy_seidel_table(data=self.__gjdata)}\n")
-                elif response == "GS":
-                    print(f"\nGauss-Seidel Method\nResult: x = {seidel[0]}, y = {seidel[1]}, z = {seidel[2]}\nnumber of iterations: {self.__seidel_counter}\n{self.__jacopy_seidel_table(data=self.__gsdata)}\n")
-                elif response == "RS":
-                    print(f"\nRelaxation Method\n iterations: {self.__relaxation_counter}\n{self.__relaxation_table(self.__rsdata)}\nTOTAL: x = {round(relaxation[0], 3)}, y = {round(relaxation[1], 3)}, z = {round(relaxation[2], 3)}\n")
-                elif response == "C":
-                    rank = {"Gauss-Jacopy Method": self.__jacopy_counter, "Gauss-Seidel Method": self.__seidel_counter, "Relaxation Method": self.__relaxation_counter}
-                    name, counter = list(rank.keys()), list(rank.values())
-                    sorted_rank = argsort(counter)
-                    print("\nbest method:")
-                    [print(f"{i[0]+1}. {name[i[1]]} -> {counter[i[1]]} iterations") for i in enumerate(sorted_rank)]
-                elif response == "E":
-                    break
-                else:
-                    print("invalid input.")  
-        else:
-            print(
-                "\nthe matrix is not diagonally dominant, the program will use Cramers-Rule."
-            )
-            self.__view()
-            cr = self.__cramers_rule()
-            if type(cr) != bool:
-                print(f"\nCramers-Rule\nResult: x = {cr[0]}, y = {cr[1]}, z = {cr[2]}\n")
     
-    def __gauss_seidel(self) -> list:
+    def gauss_seidel(self) -> list:
         """
         performs Gauss-Seidel method
         """
@@ -133,12 +96,9 @@ class Calculator:
         arr_z = self.__matrix[2]
         sx, sy, sz = 0, 0, 0
         while True:
-            new_x = round((arr_x[3] - (arr_x[1] * y) - (arr_x[2] * z)) / arr_x[0], 3)
-            x = new_x
-            new_y = round((arr_y[3] - (arr_y[0] * x) - (arr_y[2] * z)) / arr_y[1], 3)
-            y = new_y
-            new_z = round((arr_z[3] - (arr_z[0] * x) - (arr_z[1] * y)) / arr_z[2], 3)
-            z = new_z
+            x = round((arr_x[3] - (arr_x[1] * y) - (arr_x[2] * z)) / arr_x[0], 3)
+            y = round((arr_y[3] - (arr_y[0] * x) - (arr_y[2] * z)) / arr_y[1], 3)
+            z = round((arr_z[3] - (arr_z[0] * x) - (arr_z[1] * y)) / arr_z[2], 3)
             self.__gjs_to_table(
                 data=self.__gsdata, index=self.__seidel_counter, values=[sx,sy, sz]
             )
@@ -148,9 +108,9 @@ class Calculator:
                 self.__seidel_counter += 1
                 sx, sy, sz = x, y, z
                 
-        return [x, y, z]
+        return [self.__seidel_counter, self.__jacopy_seidel_table(data=self.__gsdata), x, y, z]
 
-    def __gauss_jacopy(self) -> list:
+    def gauss_jacopy(self) -> list:
         """
         Performs Gauss-Jacopy method
         """
@@ -171,9 +131,12 @@ class Calculator:
                 self.__jacopy_counter += 1
                 x, y, z = new_x, new_y, new_z
                 
-        return [x, y, z]
+        return [self.__jacopy_counter, self.__jacopy_seidel_table(data=self.__gjdata), x, y, z]
 
-    def __relaxation(self) -> list:
+    def relaxation(self) -> list:
+        """
+        Performs Gauss-Jacopy method
+        """
         x,y,z = 0,0,0
         dx,dy,dz = 0,0,0
         arr_x = self.__matrix[0]
@@ -213,9 +176,9 @@ class Calculator:
                     x, y, z = 0,0,dz
                 self.__relaxation_counter += 1
             
-        return [f_x,f_y,f_z]
+        return [self.__relaxation_counter, self.__relaxation_table(data=self.__rsdata), round(f_x, 3),round(f_y, 3),round(f_z, 3)]
 
-    def __cramers_rule(self) -> list:
+    def cramers_rule(self) -> list:
         """
         performs Cramer's Rule
         """
@@ -283,6 +246,9 @@ class Calculator:
         data[3].append(values[2])
         
     def __rs_to_table(self, data, index, operation, dx, dy, dz, r1, r2, r3) -> None:
+        """
+        writes the values for Relaxation table.
+        """
         data[0].append(index+1)
         data[1].append(operation)
         data[2].append(dx)
@@ -292,7 +258,17 @@ class Calculator:
         data[6].append(r2)
         data[7].append(r3)
 
+    def view_ranking(self) -> None:
+        rank = {"Gauss-Jacopy Method": self.__jacopy_counter, "Gauss-Seidel Method": self.__seidel_counter, "Relaxation Method": self.__relaxation_counter}
+        name, counter = list(rank.keys()), list(rank.values())
+        sorted_rank = argsort(counter)
+        print("\nbest method:")
+        [print(f"{i[0]+1}. {name[i[1]]} -> {counter[i[1]]} iterations") for i in enumerate(sorted_rank)]
+        
     def __relaxation_table(self, data) -> str:
+        """
+        shows the iteration table of relaxation.
+        """
         arr = {"iteration": data[0], "operation": data[1], "dx": data[2], "dy": data[3], "dz": data[4], "R1": data[5], "R2": data[6], "R3": data[7]}
         df = pd.DataFrame(arr)
         table = tbl.tabulate(df, headers="keys", tablefmt="grid", showindex=False)
@@ -300,7 +276,7 @@ class Calculator:
     
     def __jacopy_seidel_table(self, data) -> str:
         """
-        shows the iteration table.
+        shows the iteration table of Jacopy/Seidel.
         """
         arr = {"iteration": data[0], "x": data[1], "y": data[2], "z": data[3]}
         df = pd.DataFrame(arr)
