@@ -15,11 +15,13 @@ class Calculator:
         self.__gjdata = [[], [], [], []]
         self.__gsdata = [[], [], [], []]
         self.__rsdata = [[], [], [], [], [],[], [], []]
+        #
         for array in matrix:
             right_side = ""
             sign_collector = ""
             n_before_variable = ""
             arr = []
+            #[8,x,y,-,z,=,8]
             for n in array:
                 if n == "-":
                     sign_collector = n
@@ -66,6 +68,7 @@ class Calculator:
         for s in sequence:
             matrix = [self.__matrix[s[0]], self.__matrix[s[1]], self.__matrix[s[2]]]
             for arr in matrix:
+                #[1,2,3]
                 arr = arr[:-1]
                 sum = 0
                 for item in arr:
@@ -139,9 +142,9 @@ class Calculator:
         """
         x,y,z = 0,0,0
         dx,dy,dz = 0,0,0
-        arr_x = self.__matrix[0]
-        arr_y = self.__matrix[1]
-        arr_z = self.__matrix[2]
+        arr_x = self.__matrix[0].copy()
+        arr_y = self.__matrix[1].copy()
+        arr_z = self.__matrix[2].copy()
         ri_x = max([abs(n) for n in arr_x[:-1]])
         ri_y = max([abs(n) for n in arr_y[:-1]])
         ri_z = max([abs(n) for n in arr_z[:-1]])
@@ -216,7 +219,7 @@ class Calculator:
             return False
         return [x, y, z]
 
-    def __determinant(self, matrix) -> int:
+    def __determinant(self, matrix) -> float:
         """
         finds the determinant of a matrix.
         """

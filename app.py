@@ -13,6 +13,9 @@ def main():
         equation3 = [
             item for item in [*input("equation3: ")] if item not in unwanted_item
         ]
+        #8x + y + z = 8
+        # [8,x,y,,-z,=,8]
+        # [8, 1, -1, 8]
         try:
             matrix = Calculator(matrix=[equation1, equation2, equation3])
         except Exception:
@@ -23,9 +26,10 @@ def main():
             result = matrix.test_diagonal_dominance()
             if result:
                 matrix.view_matrix()
+                relaxation = matrix.relaxation()
                 jacopy = matrix.gauss_jacopy()
                 seidel = matrix.gauss_seidel()
-                relaxation = matrix.relaxation()
+         
                 print("\nthe matrix is diagonally dominant, what method would you like to use?")
                 while True:
                     print("\n(GJ) for Gauss-Jacopy Method\n(GS) for Gauss-Seidel Method\n(RS) for Relaxation Method\n(C) for comparison\n(E) to go back")
