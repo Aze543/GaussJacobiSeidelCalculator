@@ -21,7 +21,6 @@ class Calculator:
             sign_collector = ""
             n_before_variable = ""
             arr = []
-            #[8,x,y,-,z,=,8]
             for n in array:
                 if n == "-":
                     sign_collector = n
@@ -40,7 +39,17 @@ class Calculator:
                     else:
                         n_before_variable = ""
                 else:
-                    arr.append(float(f"{sign_collector}{n}"))
+                    arr_i = array.index(n)
+                    for i in range(arr_i + 1, len(array)):
+                        try:
+                            float(array[i])
+                        except Exception:
+                            break
+                        else:
+                            n = str(n) + str(array[i])
+                            array.remove(array[i])
+
+                    arr.append(float(f"{sign_collector}{float(n)}"))
                     sign_collector = ""
                     n_before_variable = f"{n}"
             arr.append(float(right_side))
@@ -68,7 +77,6 @@ class Calculator:
         for s in sequence:
             matrix = [self.__matrix[s[0]], self.__matrix[s[1]], self.__matrix[s[2]]]
             for arr in matrix:
-                #[1,2,3]
                 arr = arr[:-1]
                 sum = 0
                 for item in arr:

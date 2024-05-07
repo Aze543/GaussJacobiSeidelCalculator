@@ -13,13 +13,10 @@ def main():
         equation3 = [
             item for item in [*input("equation3: ")] if item not in unwanted_item
         ]
-        #8x + y + z = 8
-        # [8,x,y,,-z,=,8]
-        # [8, 1, -1, 8]
         try:
             matrix = Calculator(matrix=[equation1, equation2, equation3])
-        except Exception:
-            print("\n[ERROR] Invalid input.")
+        except Exception as e:
+            print(f"\n[ERROR: {e}] Invalid input.")
             continue
         else:
             print("\ntesting if the matrix is diagonally dominant.")
