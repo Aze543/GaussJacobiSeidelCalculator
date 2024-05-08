@@ -116,7 +116,7 @@ class Calculator:
             if (sx, sy, sz) == (x, y, z):
                 elapsed_time = f"{round((time.time() - start) * 10**3, 3)} ms"
                 break
-            elif self.__relaxation_counter > 100:
+            elif self.__seidel_counter > 100:
                 return "the matrix is diverginng."
             else:
                 self.__seidel_counter += 1
@@ -175,9 +175,9 @@ class Calculator:
             r1 = arr_x[3] - (arr_x[0]*x) - (arr_x[1]*y) - (arr_x[2]*z)
             r2 = arr_y[3] - (arr_y[0]*x) - (arr_y[1]*y) - (arr_y[2]*z)
             r3 = arr_z[3] - (arr_z[0]*x) - (arr_z[1]*y) - (arr_z[2]*z)
-            arr_x[3] = r1 = round(r1, 4)
-            arr_y[3] = r2 = round(r2, 4)
-            arr_z[3] = r3 = round(r3, 4)
+            r1 = round(r1, 4)
+            r2 = round(r2, 4)
+            r3 = round(r3, 4)
             operation = 0
             for n in enumerate([x,y,z]):
                 if abs(n[1]) != 0:
@@ -187,24 +187,25 @@ class Calculator:
             self.__rs_approx += f"\n>> approximation #{self.__relaxation_counter}\n"
             self.__rs_approx += f"\nR1 = {arr_x[3]} - ({arr_x[0]} * {x}) - ({arr_x[1]} * {y}) - ({arr_x[2]} * {z}) = {r1}\n"
             self.__rs_approx += f"R2 = {arr_y[3]} - ({arr_y[0]} * {x}) - ({arr_y[1]} * {y}) - ({arr_y[2]} * {z}) = {r2}\n"
-            self.__rs_approx += f"R2 = {arr_y[3]} - ({arr_y[0]} * {x}) - ({arr_y[1]} * {y}) - ({arr_y[2]} * {z}) = {r3}\n"
+            self.__rs_approx += f"R3 = {arr_z[3]} - ({arr_z[0]} * {x}) - ({arr_z[1]} * {y}) - ({arr_z[2]} * {z}) = {r3}\n"
             if [abs(n) < tol for n in [r1-dx, r2-dy, r3-dz]] == [True, True, True]:
                 elapsed_time = f"{round((time.time() - start) * 10**3, 3)} ms"
                 break
             else:
+                arr_x[3], arr_y[3], arr_z[3] = r1, r2, r3
                 if abs(r1) == max([abs(n) for n in [r1, r2, r3]]):
                     dx = round(r1/ri_x, 4)
-                    self.__rs_approx += f"\nmaximum: r1 = {r1}\ndx = {r1}/{ri_x} = {dx}\n"
+                    self.__rs_approx += f"\nmaximum: R1 = {r1}\ndx = {r1}/{ri_x} = {dx}\n"
                     f_x += dx
                     x, y, z = dx,0,0
                 elif abs(r2) == max([abs(n) for n in [r1, r2, r3]]):
                     dy = round(r2/ri_y, 4)
-                    self.__rs_approx += f"\nmaximum: r2 = {r2}\ndy = {r2}/{ri_y} = {dy}\n"
+                    self.__rs_approx += f"\nmaximum: R2 = {r2}\ndy = {r2}/{ri_y} = {dy}\n"
                     f_y += dy
                     x, y, z = 0,dy,0
                 elif abs(r3) == max([abs(n) for n in [r1, r2, r3]]):
                     dz = round(r3/ri_z, 4)
-                    self.__rs_approx += f"\nmaximum: r3 = {r3}\ndx = {r3}/{ri_z} = {dz}\n"
+                    self.__rs_approx += f"\nmaximum: R3 = {r3}\ndx = {r3}/{ri_z} = {dz}\n"
                     f_z += dz
                     x, y, z = 0,0,dz
                 
