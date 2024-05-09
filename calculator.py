@@ -97,9 +97,9 @@ class Calculator:
         arr_x = self.__matrix[0]
         arr_y = self.__matrix[1]
         arr_z = self.__matrix[2]
-        sx, sy, sz = 0, 0, 0
+        px, py, pz = 0, 0, 0
         self.__gs_approx += f"\ninitial values: x = {x}, y = {y}, z = {z}\n"
-        self.__gjs_to_table(data=self.__gsdata, index=self.__seidel_counter, values=[sx,sy, sz])
+        self.__gjs_to_table(data=self.__gsdata, index=self.__seidel_counter, values=[x,y,z])
         self.__seidel_counter += 1
         while True:
             self.__gs_approx += f"\n>> approximation #{self.__seidel_counter}\n"
@@ -113,14 +113,14 @@ class Calculator:
             self.__gs_approx += f"z = ({arr_x[3]} - ({arr_x[0]} * {y}) - ({arr_x[1]} * {z}))/{arr_x[2]} = {z}\n"
             
             self.__gjs_to_table(data=self.__gsdata, index=self.__seidel_counter, values=[x,y,z])
-            if (sx, sy, sz) == (x, y, z):
+            if (px, py, pz) == (x, y, z):
                 elapsed_time = f"{round((time.time() - start) * 10**3, 3)} ms"
                 break
             elif self.__seidel_counter > 100:
                 return "\n\nGauss-Seidel Method\nthe values are diverging, can't find their approximate values.\n"
             else:
                 self.__seidel_counter += 1
-                sx, sy, sz = x, y, z     
+                px, py, pz = x, y, z     
         return [self.__seidel_counter, self.__jacopy_seidel_table(data=self.__gsdata), x, y, z, self.__gs_approx, elapsed_time]
 
     def gauss_jacopy(self) -> list:
