@@ -2,9 +2,9 @@ from calculator import Calculator
 
 def main():
     unwanted_item = [" ", "+"]
-    print("\nWelcome to Gauss Jacobi, Gauss Seidel and Relaxation Calculator!\ncreated by Group 6\nElijah Eizen Inopia\nRonjay Bacsal\nPatricia Chelsea Neria\nKhaylee Vecina\n")
+    print("\nWelcome to Gauss Jacobi, Gauss Seidel and Relaxation Calculator!\ncreated by Group 6\nElijah Eizen Inopia\nRonjay Bacsal\nPatricia Chelsea Neria\nKhaylee Vecina")
     while True:
-        equation1 = [item for item in [*input("equation1: ")] if item not in unwanted_item]
+        equation1 = [item for item in [*input("\nequation1: ")] if item not in unwanted_item]
         equation2 = [item for item in [*input("equation2: ")] if item not in unwanted_item]
         equation3 = [item for item in [*input("equation3: ")] if item not in unwanted_item]
         try:
