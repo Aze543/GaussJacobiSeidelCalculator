@@ -43,7 +43,7 @@ class Calculator:
                 else:
                     n += item
             if len(arr[:-1]) != 3:
-                float("x")
+                raise Exception
             self.__matrix.append(arr)
 
     def view_matrix(self) -> None:
