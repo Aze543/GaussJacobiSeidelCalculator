@@ -117,7 +117,7 @@ class Calculator:
                 elapsed_time = f"{round((time.time() - start) * 10**3, 3)} ms"
                 break
             elif self.__seidel_counter > 100:
-                return "the matrix is diverginng."
+                return "\n\nGauss-Seidel Method\nthe values are diverging, can't find their approximate values.\n"
             else:
                 self.__seidel_counter += 1
                 sx, sy, sz = x, y, z     
@@ -244,8 +244,7 @@ class Calculator:
             y = round(numerator_y / denominator, 3)
             z = round(numerator_z / denominator, 3)
         except Exception as e:
-            print(f"\nCramer's Rule\n[ERROR: {e}] the operation cannot continue.")
-            return False
+            return f"\nCramer's Rule\n[ERROR: {e}] the operation cannot continue."
         return [x, y, z]
 
     def __determinant(self, matrix) -> float:

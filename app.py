@@ -2,8 +2,8 @@ from calculator import Calculator
 
 def main():
     unwanted_item = [" ", "+"]
+    print("\nWelcome to Gauss Jacobi, Gauss Seidel and Relaxation Calculator!\ncreated by Group 6\nElijah Eizen Inopia\nRonjay Bacsal\nPatricia Chelsea Neria\nKhaylee Vecina\n")
     while True:
-        print("\nWelcome to Gauss Jacobi, Gauss Seidel and Relaxation Calculator!\ncreated by Group 6\nElijah Eizen Inopia\nRonjay Bacsal\nPatricia Chelsea Neria\nKhaylee Vecina\n")
         equation1 = [item for item in [*input("equation1: ")] if item not in unwanted_item]
         equation2 = [item for item in [*input("equation2: ")] if item not in unwanted_item]
         equation3 = [item for item in [*input("equation3: ")] if item not in unwanted_item]
@@ -42,10 +42,15 @@ def main():
                 matrix.view_matrix()
                 print("\nthe matrix is not diagonally dominant, the program will use Gauss Seidel and Cramers-Rule.")
                 seidel = matrix.gauss_seidel()
-                print(f"\n\nGauss-Seidel Method\n{seidel[5]}\nnumber of iterations: {seidel[0]}\n{seidel[1]}\nResult: x = {seidel[2]}, y = {seidel[3]}, z = {seidel[4]}\n\nelapsed time: {seidel[6]}\n")
+                if type(seidel) != str:
+                    print(f"\n\nGauss-Seidel Method\n{seidel[5]}\nnumber of iterations: {seidel[0]}\n{seidel[1]}\nResult: x = {seidel[2]}, y = {seidel[3]}, z = {seidel[4]}\n\nelapsed time: {seidel[6]}\n")
+                else:
+                    print(seidel)
                 cr = matrix.cramers_rule()
-                if type(cr) != bool:
+                if type(cr) != str:
                     print(f"\nCramer's Rule\nResult: x = {cr[0]}, y = {cr[1]}, z = {cr[2]}\n")
+                else:
+                    print(cr)
             
             response = input("\nwould you like to go again? Y or N: ").upper()
             if response == "Y":
