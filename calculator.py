@@ -338,4 +338,3 @@ class Calculator:
         return table
     
     
-    
