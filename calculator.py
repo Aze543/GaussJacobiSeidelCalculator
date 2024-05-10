@@ -1,6 +1,6 @@
 import pandas as pd
 import tabulate as tbl
-import time
+from time import monotonic_ns
 from numpy import argsort
 
 
@@ -16,6 +16,7 @@ class Calculator:
         self.__gj_approx = ""
         self.__gs_approx = ""
         self.__rs_approx = ""
+        self.__calculate_time = False
         self.__gjdata = [[], [], [], []]
         self.__gsdata = [[], [], [], []]
         self.__rsdata = [[], [], [], [], [],[], [], []]
@@ -45,6 +46,25 @@ class Calculator:
             if len(arr[:-1]) != 3:
                 raise Exception
             self.__matrix.append(arr)
+    
+    def timer(func):
+        def wrap(self):
+            self.__calculate_time = True
+            prev = 10 #any value >= 1
+            avg, counter = 0, 0
+            n = 50
+            while counter != n:
+                start = monotonic_ns()
+                func(self)
+                end = monotonic_ns()
+                result = (end-start)*1e-6
+                if  result < prev:
+                    prev = result
+                avg += prev
+                counter += 1
+            self.__calculate_time = False
+            return func(self) + [f"{round(avg/n, 5)} ms"]
+        return wrap
 
     def view_matrix(self) -> None:
         """
@@ -88,11 +108,11 @@ class Calculator:
                 p_counter += 1
                 diagonal_item = 0
     
+    @timer
     def gauss_seidel(self) -> list:
         """
         performs Gauss-Seidel method
         """
-        start = time.time()
         x, y, z = 0, 0, 0
         arr_x = self.__matrix[0]
         arr_y = self.__matrix[1]
@@ -106,28 +126,32 @@ class Calculator:
             x = round((arr_x[3] - (arr_x[1] * y) - (arr_x[2] * z)) / arr_x[0], 3)
             self.__gs_approx += f"\nx = ({arr_x[3]} - ({arr_x[1]} * {y}) - ({arr_x[2]} * {z}))/{arr_x[0]} = {x}\n"
             
-            y = round((arr_y[3] - (arr_y[0] * x) - (arr_y[2] * z)) / arr_y[1], 3)
-            self.__gs_approx += f"y = ({arr_x[3]} - ({arr_x[0]} * {y}) - ({arr_x[2]} * {z}))/{arr_x[1]} = {y}\n"
+            y = round((arr_y[3] - (arr_y[0] * x) - (arr_y[2] * z)) / arr_y[3], 3)
+            self.__gs_approx += f"y = ({arr_y[3]} - ({arr_y[0]} * {x}) - ({arr_y[2]} * {z}))/{arr_y[1]} = {y}\n"
             
-            z = round((arr_z[3] - (arr_z[0] * x) - (arr_z[1] * y)) / arr_z[2], 3)
-            self.__gs_approx += f"z = ({arr_x[3]} - ({arr_x[0]} * {y}) - ({arr_x[1]} * {z}))/{arr_x[2]} = {z}\n"
+            z = round((arr_z[3] - (arr_z[0] * x) - (arr_z[1] * y)) / arr_z[3], 3)
+            self.__gs_approx += f"z = ({arr_z[3]} - ({arr_z[0]} * {x}) - ({arr_z[1]} * {y}))/{arr_z[2]} = {z}\n"
             
             self.__gjs_to_table(data=self.__gsdata, index=self.__seidel_counter, values=[x,y,z])
             if (px, py, pz) == (x, y, z):
-                elapsed_time = f"{round((time.time() - start) * 10**3, 3)} ms"
                 break
             elif self.__seidel_counter > 100:
                 return "\n\nGauss-Seidel Method\nthe values are diverging, can't find their approximate values.\n"
             else:
                 self.__seidel_counter += 1
                 px, py, pz = x, y, z     
-        return [self.__seidel_counter, self.__jacopy_seidel_table(data=self.__gsdata), x, y, z, self.__gs_approx, elapsed_time]
+        if self.__calculate_time:
+            self.__seidel_counter = 0
+            self.__gsdata = [[], [], [], []]
+            self.__gs_approx = ""
+            
+        return [self.__seidel_counter, self.__jacopy_seidel_table(data=self.__gsdata), x, y, z, self.__gs_approx]
 
+    @timer
     def gauss_jacopy(self) -> list:
         """
         Performs Gauss-Jacopy method
         """
-        start = time.time()
         x, y, z = 0, 0, 0
         arr_x = self.__matrix[0]
         arr_y = self.__matrix[1]
@@ -139,7 +163,6 @@ class Calculator:
             new_y = round((arr_y[3] - (arr_y[0] * x) - (arr_y[2] * z)) / arr_y[1], 3)
             new_z = round((arr_z[3] - (arr_z[0] * x) - (arr_z[1] * y)) / arr_z[2], 3)
             if (new_x, new_y, new_z) == (x, y, z):
-                elapsed_time = f"{round((time.time() - start) * 10**3, 3)} ms"
                 break
             else:
                 self.__jacopy_counter += 1
@@ -148,14 +171,19 @@ class Calculator:
                 self.__gj_approx += f"y = ({arr_y[3]} - ({arr_y[0]} * {x}) - ({arr_y[2]} * {z}) / {arr_y[1]} = {new_y}\n"
                 self.__gj_approx += f"z = ({arr_z[3]} - ({arr_z[0]} * {x}) - ({arr_z[1]} * {y}) / {arr_z[2]} = {new_z}\n"
                 x, y, z = new_x, new_y, new_z
-                
-        return [self.__jacopy_counter, self.__jacopy_seidel_table(data=self.__gjdata), x, y, z, self.__gj_approx, elapsed_time]
+        
+        if self.__calculate_time:
+            self.__jacopy_counter = 0
+            self.__gjdata = [[], [], [], []]
+            self.__gj_approx = ""
+            
+        return [self.__jacopy_counter, self.__jacopy_seidel_table(data=self.__gjdata), x, y, z, self.__gj_approx]
 
+    @timer
     def relaxation(self) -> list:
         """
         Performs Gauss-Jacopy method
         """
-        start = time.time()
         x,y,z = 0,0,0
         dx,dy,dz = 0,0,0
         tol = 1e-3
@@ -189,7 +217,6 @@ class Calculator:
             self.__rs_approx += f"R2 = {arr_y[3]} - ({arr_y[0]} * {x}) - ({arr_y[1]} * {y}) - ({arr_y[2]} * {z}) = {r2}\n"
             self.__rs_approx += f"R3 = {arr_z[3]} - ({arr_z[0]} * {x}) - ({arr_z[1]} * {y}) - ({arr_z[2]} * {z}) = {r3}\n"
             if [abs(n) < tol for n in [r1-dx, r2-dy, r3-dz]] == [True, True, True]:
-                elapsed_time = f"{round((time.time() - start) * 10**3, 3)} ms"
                 break
             else:
                 arr_x[3], arr_y[3], arr_z[3] = r1, r2, r3
@@ -209,9 +236,14 @@ class Calculator:
                     f_z += dz
                     x, y, z = 0,0,dz
                 
+        if self.__calculate_time:
+            self.__relaxation_counter = 0
+            self.__rsdata = [[], [], [], [], [],[], [], []]
+            self.__rs_approx = ""
             
-        return [self.__relaxation_counter, self.__relaxation_table(data=self.__rsdata), round(f_x, 3),round(f_y, 3),round(f_z, 3), self.__rs_approx, elapsed_time]
+        return [self.__relaxation_counter, self.__relaxation_table(data=self.__rsdata), round(f_x, 3),round(f_y, 3),round(f_z, 3), self.__rs_approx]
 
+    @timer
     def cramers_rule(self) -> list:
         """
         performs Cramer's Rule
@@ -280,12 +312,12 @@ class Calculator:
         data[6].append(r2)
         data[7].append(r3)
 
-    def view_ranking(self) -> None:
-        rank = {"Gauss-Jacopy Method": self.__jacopy_counter, "Gauss-Seidel Method": self.__seidel_counter, "Relaxation Method": self.__relaxation_counter}
-        name, counter = list(rank.keys()), list(rank.values())
-        sorted_rank = argsort(counter)
+    def view_ranking(self, gj, gs, rs) -> None:
+        rank = {"Gauss-Jacopy Method": [self.__jacopy_counter, gj], "Gauss-Seidel Method": [self.__seidel_counter, gs], "Relaxation Method": [self.__relaxation_counter, rs]}
+        key, value = list(rank.keys()), list(rank.values())
+        sorted_rank = argsort([value[0][0], value[1][0], value[2][0]])
         print("\nbest method:")
-        [print(f"{i[0]+1}. {name[i[1]]} -> {counter[i[1]]} iterations") for i in enumerate(sorted_rank)]
+        [print(f"{i[0]+1}. {key[i[1]]} -> {value[i[1]][0]} iterations -> {value[i[1]][1]}") for i in enumerate(sorted_rank)]
         
     def __relaxation_table(self, data) -> str:
         """
@@ -304,4 +336,6 @@ class Calculator:
         df = pd.DataFrame(arr)
         table = tbl.tabulate(df, headers="keys", tablefmt="grid", showindex=False)
         return table
-   
+    
+    
+    

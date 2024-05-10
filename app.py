@@ -33,7 +33,7 @@ def main():
                     elif response == "RS":
                         print(f"\nRelaxation Method\n{relaxation[5]}\nnumber of iterations: {relaxation[0]}\n{relaxation[1]}\nTOTAL: x = {relaxation[2]}, y = {relaxation[3]}, z = {relaxation[4]}\n\nelapsed time: {relaxation[6]}\n")
                     elif response == "C":
-                        matrix.view_ranking()
+                        matrix.view_ranking(gj=jacopy[6], gs=seidel[6], rs=relaxation[6])
                     elif response == "E":
                         break
                     else:
@@ -48,7 +48,7 @@ def main():
                     print(seidel)
                 cr = matrix.cramers_rule()
                 if type(cr) != str:
-                    print(f"\nCramer's Rule\nResult: x = {cr[0]}, y = {cr[1]}, z = {cr[2]}\n")
+                    print(f"\nCramer's Rule\nResult: x = {cr[0]}, y = {cr[1]}, z = {cr[2]}\n\nelapsed time: {cr[3]}\n")
                 else:
                     print(cr)
             
