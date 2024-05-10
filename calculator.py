@@ -47,8 +47,8 @@ class Calculator:
                 raise Exception
             self.__matrix.append(arr)
     
-    def timer(func):
-        def wrap(self):
+    def timer(func) -> function:
+        def wrap(self) -> list:
             self.__calculate_time = True
             prev = 10 #any value >= 1
             avg, counter = 0, 0
