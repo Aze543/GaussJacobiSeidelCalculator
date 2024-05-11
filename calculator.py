@@ -47,23 +47,28 @@ class Calculator:
                 raise Exception
             self.__matrix.append(arr)
     
-    def timer(func) -> function:
+    def timer(func):
         def wrap(self) -> list:
             self.__calculate_time = True
             prev = 10 #any value >= 1
-            avg, counter = 0, 0
+            avg, counter, avg_n = 0, 1, 0
             n = 50
-            while counter != n:
+            while (counter + avg_n) != n:
                 start = monotonic_ns()
                 func(self)
                 end = monotonic_ns()
                 result = (end-start)*1e-6
-                if  result < prev:
+                time_diff = abs(result - prev)
+                if time_diff > 1e-2:
                     prev = result
-                avg += prev
-                counter += 1
+                    counter += 1
+                    continue
+                avg += result
+                avg_n += 1
             self.__calculate_time = False
-            return func(self) + [f"{round(avg/n, 5)} ms"]
+            if type(func(self)) == str:
+                return func(self)
+            return func(self) + [f"{round(avg/avg_n, 5)} ms"]
         return wrap
 
     def view_matrix(self) -> None:
